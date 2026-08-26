@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="ko" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="metaDocTitle">KATEC - 모바일 디지털 명함</title>
+    
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0284c7',
+                            600: '#0369a1',
+                            800: '#075985',
+                            900: '#0f2d59',
+                            950: '#0b1f3a',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Noto Sans KR"', '"Plus Jakarta Sans"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        .glass-card { background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(16px); }
+        .hero-gradient { background: linear-gradient(135deg, #0b1f3a 0%, #0f2d59 50%, #1e3a8a 100%); }
+        .card-shadow { box-shadow: 0 10px 30px -5px rgba(2, 132, 199, 0.15); }
+        @keyframes pulseGlow { 0%, 100% { opacity: 0.4; } 50% { opacity: 0.8; } }
+        .animate-glow { animation: pulseGlow 3s infinite ease-in-out; }
+    </style>
+
+    <!-- 외부 데이터 파일 로드 -->
+    <script src="./members.js"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans antialiased pb-24 md:pb-12 min-h-screen flex flex-col items-center justify-start">
+
+    <!-- Top Header Bar -->
+    <header class="sticky top-0 z-40 w-full bg-slate-900/90 backdrop-blur-md border-b border-slate-800/80 px-4 py-3">
+        <div class="max-w-xl mx-auto flex justify-between items-center">
+            <!-- 로고 영역 -->
+            <div class="flex flex-col items-start justify-center">
+                <div id="logoWrapper" class="inline-block">
+                    <img id="uiHeaderLogoImg" src="" alt="회사 로고" class="h-7 sm:h-8 w-auto object-contain hidden" onerror="handleLogoError()" />
+                    <span id="uiHeaderCompanyText" class="text-base sm:text-lg font-bold text-white tracking-tight hidden"></span>
+                </div>
+                <div id="digitalCardText" class="w-full flex justify-between text-[9px] sm:text-[10px] font-semibold tracking-widest text-sky-400/90 uppercase mt-0.5 select-none">
+                    <span>D</span><span>I</span><span>G</span><span>I</span><span>T</span><span>A</span><span>L</span>
+                    <span class="w-1"></span>
+                    <span>C</span><span>A</span><span>R</span><span>D</span>
+                </div>
+            </div>
+            
+            <!-- 상단 우측: 언어 토글, 공유, QR 버튼 -->
+            <div class="flex items-center space-x-1.5 sm:space-x-2">
+                <button onclick="toggleLanguage()" class="px-2.5 py-1.5 rounded-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-sky-400 text-xs font-bold flex items-center gap-1.5 transition active:scale-95 shadow-sm">
+                    <i class="fa-solid fa-language text-sky-400 text-sm"></i>
+                    <span id="uiLangLabel">ENG</span>
+                </button>
+                <button onclick="openShareModal()" class="px-2.5 py-1.5 rounded-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-semibold flex items-center gap-1.5 transition active:scale-95 shadow-sm">
+                    <i class="fa-solid fa-share-nodes text-sky-400"></i>
+                    <span id="uiHeaderShareText">공유</span>
+                </button>
+                <button onclick="openQrModal()" class="px-2.5 py-1.5 rounded-full bg-sky-600/20 border border-sky-500/40 text-sky-300 text-xs font-semibold flex items-center gap-1.5 hover:bg-sky-600/30 transition active:scale-95 shadow-sm">
+                    <i class="fa-solid fa-qrcode"></i>
+                    <span id="uiHeaderQrText">QR</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="w-full max-w-xl px-4 pt-4 space-y-5">
+
+        <!-- 1. Profile Hero Card -->
+        <section class="hero-gradient rounded-3xl p-6 sm:p-7 text-white relative overflow-hidden border border-slate-700/60 shadow-2xl">
+            <div class="absolute -right-10 -top-10 w-44 h-44 bg-sky-500/20 rounded-full blur-3xl pointer-events-none animate-glow"></div>
+            <div class="absolute -left-10 -bottom-10 w-44 h-44 bg-blue-600/20 rounded-full blur-3xl pointer-events-none"></div>
+            
+            <div class="relative z-10">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-500/20 border border-sky-400/30 text-sky-300 text-xs font-semibold mb-4">
+                    <i class="fa-solid fa-shield-halved text-sky-400"></i>
+                    <span id="uiBadge"></span>
+                </div>
+
+                <div class="flex justify-between items-start mb-5">
+                    <div>
+                        <p id="uiCompanySub" class="text-slate-300 text-xs font-medium tracking-wide mb-1"></p>
+                        <h1 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight flex items-baseline gap-2">
+                            <span id="uiName"></span>
+                            <span id="uiTitle" class="text-lg font-normal text-slate-300"></span>
+                        </h1>
+                        <p id="uiDepartment" class="text-sky-300 font-bold text-base mt-1"></p>
+                    </div>
+
+                    <!-- Profile Photo Area -->
+                    <div class="text-right pl-3 border-l border-slate-700/80 shrink-0 flex flex-col items-end">
+                        <div class="w-20 h-24 sm:w-24 sm:h-28 bg-slate-900/90 rounded-2xl border border-slate-700 overflow-hidden flex flex-col items-center justify-center text-center p-0.5 shadow-lg relative">
+                            <img id="uiProfileImg" src="" alt="프로필 사진" class="w-full h-full object-cover rounded-xl hidden" onerror="handleProfileError()" />
+                            <div id="uiDefaultPhotoIcon" class="w-full h-full flex flex-col items-center justify-center bg-slate-800/80 rounded-xl text-slate-400 border border-slate-700/50">
+                                <div class="w-10 h-10 rounded-full bg-slate-700/80 flex items-center justify-center mb-1 text-slate-300 shadow-inner">
+                                    <i class="fa-solid fa-user text-xl"></i>
+                                </div>
+                                <span class="text-[9px] text-slate-400 font-medium tracking-tighter">PROFILE</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Skill Tags Container -->
+                <div class="bg-slate-950/60 rounded-2xl p-3.5 border border-slate-800/80 backdrop-blur-sm">
+                    <p class="text-xs text-slate-400 font-medium mb-2 flex items-center gap-1.5" id="lblKeyCompetency">
+                        <i class="fa-solid fa-microchip text-sky-400"></i> 핵심 전문 영역
+                    </p>
+                    <div id="uiSkillsContainer" class="flex flex-wrap gap-1.5 text-xs font-semibold text-slate-200"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. Primary CTA Block -->
+        <section class="grid grid-cols-3 gap-2">
+            <button onclick="downloadVCard()" class="bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white font-bold py-3 px-1 rounded-2xl shadow-lg shadow-sky-500/20 active:scale-[0.98] transition flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-1.5 text-xs sm:text-sm">
+                <i class="fa-solid fa-address-card text-base sm:text-lg"></i>
+                <span class="truncate" id="btnSaveContactText">연락처 저장</span>
+            </button>
+            <a id="btnCall" href="#" class="bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-100 font-semibold py-3 px-1 rounded-2xl active:scale-[0.98] transition flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-1.5 text-xs sm:text-sm">
+                <i class="fa-solid fa-phone text-sky-400 text-sm sm:text-base"></i>
+                <span class="truncate" id="btnCallText">전화하기</span>
+            </a>
+            <a id="btnMail" href="#" class="bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-100 font-semibold py-3 px-1 rounded-2xl active:scale-[0.98] transition flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-1.5 text-xs sm:text-sm">
+                <i class="fa-solid fa-envelope text-sky-400 text-sm sm:text-base"></i>
+                <span class="truncate" id="btnMailText">메일 보내기</span>
+            </a>
+        </section>
+
+        <!-- 3. Direct Contact Details Card -->
+        <section class="bg-slate-900/90 border border-slate-800 rounded-3xl p-5 sm:p-6 card-shadow space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <h2 class="text-base font-bold text-white flex items-center gap-2" id="lblContactDetails">
+                    <i class="fa-solid fa-id-card-clip text-sky-400"></i> 상세 연락 정보
+                </h2>
+                <button onclick="copyAllContactInfo()" class="text-xs text-sky-400 hover:text-sky-300 font-medium flex items-center gap-1 active:scale-95 transition">
+                    <i class="fa-solid fa-copy"></i> <span id="lblCopyAll">전체 복사</span>
+                </button>
+            </div>
+
+            <div class="space-y-3 text-sm">
+                <!-- Mobile -->
+                <div id="rowMobile" class="flex items-center justify-between p-2 rounded-xl hover:bg-slate-800/50 transition">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-xl bg-slate-800 flex items-center justify-center text-sky-400 shrink-0 border border-slate-700/60">
+                            <i class="fa-solid fa-mobile-screen"></i>
+                        </div>
+                        <div>
+                            <p class="text-[11px] text-slate-400" id="lblMobile">휴대전화</p>
+                            <a id="linkMobile" href="#" class="font-bold text-white hover:text-sky-400 transition"></a>
+                        </div>
+                    </div>
+                    <button id="btnCopyMobile" class="text-slate-500 hover:text-sky-400 p-2 transition"><i class="fa-solid fa-copy"></i></button>
+                </div>
+
+                <!-- Direct Office Phone -->
+                <div id="rowDirectTel" class="flex items-center justify-between p-2 rounded-xl hover:bg-slate-800/50 transition">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-xl bg-slate-800 flex items-center justify-center text-sky-400 shrink-0 border border-slate-700/60">
+                            <i class="fa-solid fa-phone-volume"></i>
+                        </div>
+                        <div>
+                            <p class="text-[11px] text-slate-400" id="lblDirectTel">직통전화 (내선)</p>
+                            <a id="linkDirectTel" href="#" class="font-bold text-white hover:text-sky-400 transition"></a>
+                        </div>
+                    </div>
+                    <button id="btnCopyDirectTel" class="text-slate-500 hover:text-sky-400 p-2 transition"><i class="fa-solid fa-copy"></i></button>
+                </div>
+
+                <!-- Company Tel / Fax -->
+                <div id="rowCompanyTel" class="flex items-center justify-between p-2 rounded-xl hover:bg-slate-800/50 transition">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-xl bg-slate-800 flex items-center justify-center text-sky-400 shrink-0 border border-slate-700/60">
+                            <i class="fa-solid fa-building"></i>
+                        </div>
+                        <div>
+                            <p class="text-[11px] text-slate-400" id="lblCompanyTelFax">대표전화 / 팩스</p>
+                            <p class="font-medium text-slate-200 text-xs">
+                                <span id="boxCompanyTel">대표: <a id="linkCompanyTel" href="#" class="hover:text-sky-400 font-bold"></a></span>
+                                <span id="boxDivider" class="text-slate-500 mx-1">|</span> 
+                                <span id="boxFax">FAX: <span id="uiFax"></span></span>
+                            </p>
+                        </div>
+                    </div>
+                    <button id="btnCopyCompanyTel" class="text-slate-500 hover:text-sky-400 p-2 transition"><i class="fa-solid fa-copy"></i></button>
+                </div>
+
+                <!-- Email -->
+                <div id="rowEmail" class="flex items-center justify-between p-2 rounded-xl hover:bg-slate-800/50 transition">
+                    <div class="flex items-center gap-3 overflow-hidden">
+                        <div class="w-9 h-9 rounded-xl bg-slate-800 flex items-center justify-center text-sky-400 shrink-0 border border-slate-700/60">
+                            <i class="fa-solid fa-envelope"></i>
+                        </div>
+                        <div class="overflow-hidden">
+                            <p class="text-[11px] text-slate-400" id="lblEmail">이메일</p>
+                            <a id="linkEmail" href="#" class="font-medium text-sky-400 hover:underline block truncate text-xs"></a>
+                            <a id="linkSubEmail" href="#" class="text-[11px] text-slate-400 hover:underline block truncate hidden"></a>
+                        </div>
+                    </div>
+                    <button id="btnCopyEmail" class="text-slate-500 hover:text-sky-400 p-2 transition shrink-0"><i class="fa-solid fa-copy"></i></button>
+                </div>
+
+                <!-- Address -->
+                <div id="rowAddress" class="flex items-center justify-between p-2 rounded-xl hover:bg-slate-800/50 transition">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-xl bg-slate-800 flex items-center justify-center text-sky-400 shrink-0 border border-slate-700/60">
+                            <i class="fa-solid fa-location-dot"></i>
+                        </div>
+                        <div>
+                            <p class="text-[11px] text-slate-400" id="lblAddress">본사 주소 [<span id="uiPostCode"></span>]</p>
+                            <p id="uiAddress" class="font-medium text-slate-200 text-xs sm:text-sm"></p>
+                        </div>
+                    </div>
+                    <button id="btnCopyAddress" class="text-slate-500 hover:text-sky-400 p-2 transition shrink-0"><i class="fa-solid fa-copy"></i></button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Key Services & Competencies Section -->
+        <section class="bg-slate-900/90 border border-slate-800 rounded-3xl p-5 sm:p-6 card-shadow space-y-4">
+            <div class="border-b border-slate-800 pb-3">
+                <span class="text-[10px] font-bold text-sky-400 tracking-wider uppercase block">Key Expertise</span>
+                <h2 class="text-lg font-bold text-white mt-0.5" id="lblServicesTitle">핵심 기술 및 사업 분야</h2>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div class="bg-slate-950/80 border border-slate-800/80 rounded-2xl p-4 hover:border-sky-500/50 transition">
+                    <div class="w-10 h-10 rounded-xl bg-sky-500/10 text-sky-400 flex items-center justify-center text-lg mb-3 border border-sky-500/20"><i class="fa-solid fa-cubes"></i></div>
+                    <h3 class="font-bold text-white text-sm mb-1" id="srv1Title">통합체계지원 (IPS/ILS)</h3>
+                    <p class="text-xs text-slate-400 leading-relaxed" id="srv1Desc">국방 무기체계 획득 및 운용 단계의 IPS 12대 요소 개발 및 종합군수지원 체계 수립</p>
+                </div>
+                <div class="bg-slate-950/80 border border-slate-800/80 rounded-2xl p-4 hover:border-sky-500/50 transition">
+                    <div class="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center text-lg mb-3 border border-blue-500/20"><i class="fa-solid fa-chart-pie"></i></div>
+                    <h3 class="font-bold text-white text-sm mb-1" id="srv2Title">RAM / PSA 정밀 분석</h3>
+                    <p class="text-xs text-slate-400 leading-relaxed" id="srv2Desc">신뢰도(R)·가용도(A)·정비도(M) 정밀 수학적 모델링 및 정비 체계 최적화 분석</p>
+                </div>
+                <div class="bg-slate-950/80 border border-slate-800/80 rounded-2xl p-4 hover:border-sky-500/50 transition">
+                    <div class="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center text-lg mb-3 border border-indigo-500/20"><i class="fa-solid fa-laptop-code"></i></div>
+                    <h3 class="font-bold text-white text-sm mb-1" id="srv3Title">IETM / CBT 개발</h3>
+                    <p class="text-xs text-slate-400 leading-relaxed" id="srv3Desc">대화형 전자기술교범(IETM) 및 멀티미디어 기반 컴퓨터자체훈련(CBT) 구축</p>
+                </div>
+                <div class="bg-slate-950/80 border border-slate-800/80 rounded-2xl p-4 hover:border-sky-500/50 transition">
+                    <div class="w-10 h-10 rounded-xl bg-teal-500/10 text-teal-400 flex items-center justify-center text-lg mb-3 border border-teal-500/20"><i class="fa-solid fa-file-contract"></i></div>
+                    <h3 class="font-bold text-white text-sm mb-1" id="srv4Title">총수명주기 관리계획</h3>
+                    <p class="text-xs text-slate-400 leading-relaxed" id="srv4Desc">LCSP 및 LSA/PSA 체계적 수립을 통한 국방 수명주기비용 절감 및 가동률 극대화</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4-1. Company Highlight Banner Section -->
+        <section class="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 text-center card-shadow relative overflow-hidden">
+            <div class="flex flex-col items-center justify-center space-y-4">
+                <div class="inline-flex items-center justify-center px-4 py-1.5 rounded-full bg-sky-950/80 border border-sky-500/30 text-sky-400 font-extrabold text-base tracking-wider shadow-inner">
+                    20+
+                </div>
+                
+                <div class="space-y-2">
+                    <h3 class="text-lg sm:text-xl font-bold text-white tracking-tight" id="lblPromoTitle">
+                        20년 이상의 축적된 K-방산 기술 노하우
+                    </h3>
+                    <p class="text-xs text-slate-400 leading-relaxed max-w-md mx-auto" id="lblPromoDesc">
+                        주식회사 카텍은 육·해·공군 및 주요 방산기업과 함께 최고 품질의 통합체계지원(IPS) 표준을 만들어가고 있습니다.
+                    </p>
+                </div>
+
+                <a id="btnCompanyWebsite" href="#" target="_blank" class="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-sky-950/60 hover:bg-sky-900/60 border border-sky-500/30 text-sky-400 text-xs sm:text-sm font-semibold transition active:scale-95 shadow-sm">
+                    <i class="fa-solid fa-globe text-sm"></i>
+                    <span>공식 웹사이트 방문 (www.katec.or.kr)</span>
+                </a>
+            </div>
+        </section>
+
+        <!-- 5. Map & Directions Section -->
+        <section class="bg-slate-900/90 border border-slate-800 rounded-3xl p-5 sm:p-6 card-shadow space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <h2 class="text-base font-bold text-white flex items-center gap-2" id="lblLocationTitle">
+                    <i class="fa-solid fa-map-location-dot text-sky-400"></i> 오시는 길 안내
+                </h2>
+                <span class="text-xs text-slate-400" id="uiMapLocSummary"></span>
+            </div>
+            <div class="bg-slate-950 p-3.5 rounded-2xl border border-slate-800 text-xs space-y-1">
+                <p class="font-bold text-white flex items-center gap-1">
+                    <i class="fa-solid fa-building-flag text-sky-400"></i> <span id="uiMapCompanyName"></span>
+                </p>
+                <p class="text-slate-300" id="uiMapFullAddress"></p>
+            </div>
+            <div class="grid grid-cols-3 gap-2">
+                <a id="btnKakaoMap" href="#" target="_blank" class="bg-amber-400/10 border border-amber-400/30 text-amber-300 hover:bg-amber-400/20 py-2.5 px-2 rounded-xl text-center text-xs font-bold transition flex flex-col items-center gap-1 active:scale-95">
+                    <i class="fa-solid fa-location-arrow text-amber-400 text-sm"></i> 카카오맵
+                </a>
+                <a id="btnNaverMap" href="#" target="_blank" class="bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 hover:bg-emerald-500/20 py-2.5 px-2 rounded-xl text-center text-xs font-bold transition flex flex-col items-center gap-1 active:scale-95">
+                    <i class="fa-solid fa-map text-emerald-400 text-sm"></i> 네이버지도
+                </a>
+                <a id="btnGoogleMap" href="#" target="_blank" class="bg-blue-500/10 border border-blue-200/30 text-blue-300 hover:bg-blue-500/20 py-2.5 px-2 rounded-xl text-center text-xs font-bold transition flex flex-col items-center gap-1 active:scale-95">
+                    <i class="fa-brands fa-google text-blue-400 text-sm"></i> 구글지도
+                </a>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="text-center pt-3 pb-8 space-y-2 border-t border-slate-800/80">
+            <p class="text-xs text-slate-500 flex items-center justify-center gap-1.5">
+                <i class="fa-solid fa-wifi text-sky-400"></i> NFC 태그 및 QR 코드로 공유 가능합니다.
+            </p>
+            <p class="text-[11px] text-slate-600 font-medium">
+                © <span id="uiFooterCompany"></span> All rights reserved.
+            </p>
+        </footer>
+    </main>
+
+    <!-- Fixed Mobile Bottom CTA Bar -->
+    <div class="fixed bottom-0 left-0 right-0 z-40 bg-slate-900/95 border-t border-slate-800 backdrop-blur-lg p-3 sm:hidden">
+        <div class="max-w-xl mx-auto flex gap-2">
+            <button onclick="downloadVCard()" class="flex-1 bg-sky-600 hover:bg-sky-500 text-white font-bold py-2.5 px-3 rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-md">
+                <i class="fa-solid fa-address-card"></i> <span id="btnBottomSave">연락처 저장</span>
+            </button>
+            <a id="btnBottomCall" href="#" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-100 font-bold py-2.5 px-3 rounded-xl text-xs flex items-center justify-center gap-1.5 border border-slate-700">
+                <i class="fa-solid fa-phone text-sky-400"></i> <span id="btnBottomCallText">전화걸기</span>
+            </a>
+            <button onclick="openShareModal()" class="w-10 h-10 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl flex items-center justify-center border border-slate-700 shrink-0">
+                <i class="fa-solid fa-share-nodes"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- QR Code Modal -->
+    <div id="qrModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 max-w-sm w-full text-center space-y-4 shadow-2xl relative">
+            <button onclick="closeQrModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white p-2">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+            <h3 class="text-lg font-bold text-white">디지털 명함 QR 코드</h3>
+            <p class="text-xs text-slate-400">상대방 스마트폰 카메라로 스캔하세요.</p>
+            <div class="bg-white p-4 rounded-2xl inline-block shadow-inner mx-auto my-1">
+                <img id="qrCodeImg" src="" alt="QR Code" class="w-48 h-48 mx-auto">
+            </div>
+            <p id="uiQrName" class="text-xs text-sky-400 font-semibold"></p>
+            <button onclick="closeQrModal()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold py-2.5 rounded-xl transition">닫기</button>
+        </div>
+    </div>
+
+    <!-- Toast Notification Box -->
+    <div id="toast" class="fixed top-5 left-1/2 -translate-x-1/2 z-50 bg-sky-600 text-white font-semibold text-xs px-5 py-3 rounded-full shadow-2xl opacity-0 transition-all duration-300 pointer-events-none flex items-center gap-2">
+        <i class="fa-solid fa-circle-check"></i>
+        <span id="toastMsg">복사되었습니다.</span>
+    </div>
+
+    <!-- Controller Script -->
+    <script>
+        let currentLang = 'ko';
+        let currentUser = null;
+
+        const UI_TEXT = {
+            ko: {
+                langLabel: "ENG",
+                shareLabel: "공유",
+                qrLabel: "QR",
+                keyCompetency: "핵심 전문 영역",
+                saveContact: "연락처 저장",
+                call: "전화하기",
+                email: "메일 보내기",
+                contactDetails: "상세 연락 정보",
+                copyAll: "전체 복사",
+                mobile: "휴대전화",
+                directTel: "직통전화 (내선)",
+                companyTelFax: "대표전화 / 팩스",
+                emailLabel: "이메일",
+                addressLabel: "본사 주소",
+                servicesTitle: "핵심 기술 및 사업 분야",
+                srv1Title: "통합체계지원 (IPS/ILS)",
+                srv1Desc: "국방 무기체계 획득 및 운용 단계의 IPS 12대 요소 개발 및 종합군수지원 체계 수립",
+                srv2Title: "RAM / PSA 정밀 분석",
+                srv2Desc: "신뢰도(R)·가용도(A)·정비도(M) 정밀 수학적 모델링 및 정비 체계 최적화 분석",
+                srv3Title: "IETM / CBT 개발",
+                srv3Desc: "대화형 전자기술교범(IETM) 및 멀티미디어 기반 컴퓨터자체훈련(CBT) 구축",
+                srv4Title: "총수명주기 관리계획",
+                srv4Desc: "LCSP 및 LSA/PSA 체계적 수립을 통한 국방 수명주기비용 절감 및 가동률 극대화",
+                promoTitle: "20년 이상의 축적된 K-방산 기술 노하우",
+                promoDesc: "주식회사 카텍은 육·해·공군 및 주요 방산기업과 함께 최고 품질의 통합체계지원(IPS) 표준을 만들어가고 있습니다.",
+                locationTitle: "오시는 길 안내",
+                copiedToast: "복사되었습니다.",
+                allCopiedToast: "전체 명함 정보가 복사되었습니다!"
+            },
+            en: {
+                langLabel: "KOR",
+                shareLabel: "Share",
+                qrLabel: "QR",
+                keyCompetency: "Key Competencies",
+                saveContact: "Save Contact",
+                call: "Call",
+                email: "Email",
+                contactDetails: "Contact Details",
+                copyAll: "Copy All",
+                mobile: "Mobile",
+                directTel: "Direct Tel",
+                companyTelFax: "Office / Fax",
+                emailLabel: "Email",
+                addressLabel: "Headquarters",
+                servicesTitle: "Core Technologies & Business Areas",
+                srv1Title: "Integrated Product Support (IPS/ILS)",
+                srv1Desc: "Development of 12 IPS elements and total integrated logistics support for defense platforms",
+                srv2Title: "RAM / PSA Precision Analysis",
+                srv2Desc: "Quantitative Reliability, Availability, Maintainability modeling and maintenance optimization",
+                srv3Title: "IETM / CBT Development",
+                srv3Desc: "Interactive Electronic Technical Manuals and multimedia-based simulation training systems",
+                srv4Title: "Life Cycle Sustainment Plan",
+                srv4Desc: "Systematic LCSP & LSA/PSA establishment to minimize life cycle costs and maximize readiness",
+                promoTitle: "Over 20 Years of Accumulated Defense IPS Know-How",
+                promoDesc: "KATEC Co., Ltd. creates the highest standard of Integrated Product Support alongside armed forces and defense leaders.",
+                locationTitle: "Location & Directions",
+                copiedToast: "Copied to clipboard!",
+                allCopiedToast: "All contact info copied!"
+            }
+        };
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const memberId = urlParams.get('id');
+
+            if (typeof MEMBERS_DATA !== 'undefined' && MEMBERS_DATA) {
+                currentUser = (memberId && MEMBERS_DATA[memberId]) ? MEMBERS_DATA[memberId] : MEMBERS_DATA[Object.keys(MEMBERS_DATA)[0]];
+            }
+            renderPage();
+        });
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'ko' ? 'en' : 'ko';
+            document.documentElement.lang = currentLang;
+            renderPage();
+        }
+
+        function renderPage() {
+            const text = UI_TEXT[currentLang];
+
+            // 1. 공통 텍스트 렌더링
+            document.getElementById('uiLangLabel').innerText = text.langLabel;
+            document.getElementById('uiHeaderShareText').innerText = text.shareLabel;
+            document.getElementById('uiHeaderQrText').innerText = text.qrLabel;
+
+            document.getElementById('lblKeyCompetency').innerHTML = `<i class="fa-solid fa-microchip text-sky-400"></i> ${text.keyCompetency}`;
+            document.getElementById('btnSaveContactText').innerText = text.saveContact;
+            document.getElementById('btnCallText').innerText = text.call;
+            document.getElementById('btnMailText').innerText = text.email;
+            document.getElementById('btnBottomSave').innerText = text.saveContact;
+            document.getElementById('btnBottomCallText').innerText = text.call;
+            document.getElementById('lblContactDetails').innerHTML = `<i class="fa-solid fa-id-card-clip text-sky-400"></i> ${text.contactDetails}`;
+            document.getElementById('lblCopyAll').innerText = text.copyAll;
+            document.getElementById('lblMobile').innerText = text.mobile;
+            document.getElementById('lblDirectTel').innerText = text.directTel;
+            document.getElementById('lblCompanyTelFax').innerText = text.companyTelFax;
+            document.getElementById('lblEmail').innerText = text.emailLabel;
+
+            // 사업 분야 텍스트
+            document.getElementById('lblServicesTitle').innerText = text.servicesTitle;
+            document.getElementById('srv1Title').innerText = text.srv1Title;
+            document.getElementById('srv1Desc').innerText = text.srv1Desc;
+            document.getElementById('srv2Title').innerText = text.srv2Title;
+            document.getElementById('srv2Desc').innerText = text.srv2Desc;
+            document.getElementById('srv3Title').innerText = text.srv3Title;
+            document.getElementById('srv3Desc').innerText = text.srv3Desc;
+            document.getElementById('srv4Title').innerText = text.srv4Title;
+            document.getElementById('srv4Desc').innerText = text.srv4Desc;
+
+            // 프로모션 및 위치
+            document.getElementById('lblPromoTitle').innerText = text.promoTitle;
+            document.getElementById('lblPromoDesc').innerText = text.promoDesc;
+            document.getElementById('lblLocationTitle').innerHTML = `<i class="fa-solid fa-map-location-dot text-sky-400"></i> ${text.locationTitle}`;
+
+            // 2. 회사 공통 정보 바인딩
+            if (typeof COMPANY_COMMON !== 'undefined' && COMPANY_COMMON) {
+                const cData = COMPANY_COMMON[currentLang];
+                document.getElementById('uiBadge').innerText = cData.badgeText;
+                document.getElementById('uiCompanySub').innerText = `${cData.companyName} ${cData.companySub}`;
+                document.getElementById('lblAddress').innerHTML = `${text.addressLabel} [<span id="uiPostCode">${COMPANY_COMMON.postCode}</span>]`;
+                document.getElementById('linkCompanyTel').innerText = COMPANY_COMMON.companyTel;
+                document.getElementById('linkCompanyTel').href = `tel:${COMPANY_COMMON.companyTel}`;
+                document.getElementById('uiFax').innerText = COMPANY_COMMON.fax;
+                document.getElementById('btnCompanyWebsite').href = COMPANY_COMMON.website;
+                document.getElementById('uiFooterCompany').innerText = `${cData.companySub}.`;
+                document.getElementById('btnCopyCompanyTel').onclick = () => copyToClipboard(COMPANY_COMMON.companyTel, '회사 연락처');
+
+                // 주소 바인딩
+                document.getElementById('uiAddress').innerText = cData.addressDetail ? `${cData.address} ${cData.addressDetail}` : cData.address;
+                document.getElementById('uiMapLocSummary').innerText = cData.address.split(' ').slice(0, 3).join(' ');
+                document.getElementById('uiMapCompanyName').innerText = `${cData.companyName} 본사`;
+                document.getElementById('uiMapFullAddress').innerText = cData.addressDetail ? `${cData.address} ${cData.addressDetail}` : cData.address;
+                document.getElementById('btnCopyAddress').onclick = () => copyToClipboard(cData.address, '주소');
+
+                document.getElementById('btnKakaoMap').href = `https://map.kakao.com/link/search/${encodeURIComponent(COMPANY_COMMON.ko.address)}`;
+                document.getElementById('btnNaverMap').href = `https://map.naver.com/v5/search/${encodeURIComponent(COMPANY_COMMON.ko.address)}`;
+                document.getElementById('btnGoogleMap').href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(cData.address)}`;
+
+                // 스킬 태그 바인딩
+                const skillsContainer = document.getElementById('uiSkillsContainer');
+                skillsContainer.innerHTML = '';
+                cData.skills.forEach(skill => {
+                    const span = document.createElement('span');
+                    span.className = 'bg-sky-950/90 border border-sky-800/70 px-2.5 py-1 rounded-lg';
+                    span.innerText = skill;
+                    skillsContainer.appendChild(span);
+                });
+
+                // 로고
+                const logoImg = document.getElementById('uiHeaderLogoImg');
+                const companyText = document.getElementById('uiHeaderCompanyText');
+                if (COMPANY_COMMON.companyLogoUrl && COMPANY_COMMON.companyLogoUrl.trim() !== "") {
+                    logoImg.src = COMPANY_COMMON.companyLogoUrl;
+                    logoImg.classList.remove('hidden');
+                    companyText.classList.add('hidden');
+                } else {
+                    handleLogoError();
+                }
+            }
+
+            // 3. 개인 사용자 정보 바인딩
+            if (currentUser) {
+                const uData = currentUser[currentLang];
+                document.title = `${typeof COMPANY_COMMON !== 'undefined' ? COMPANY_COMMON[currentLang].companyName : 'KATEC'} - ${uData.name} ${uData.title}`;
+                document.getElementById('uiName').innerText = uData.name;
+                document.getElementById('uiTitle').innerText = uData.title;
+                document.getElementById('uiDepartment').innerText = uData.department;
+                document.getElementById('uiQrName').innerText = `${typeof COMPANY_COMMON !== 'undefined' ? COMPANY_COMMON[currentLang].companyName : 'KATEC'} ${uData.name} ${uData.title}`;
+
+                // 프로필 사진
+                const imgEl = document.getElementById('uiProfileImg');
+                const defaultIcon = document.getElementById('uiDefaultPhotoIcon');
+                if (currentUser.photoUrl && currentUser.photoUrl.trim() !== "") {
+                    imgEl.src = currentUser.photoUrl;
+                    imgEl.classList.remove('hidden');
+                    defaultIcon.classList.add('hidden');
+                } else {
+                    handleProfileError();
+                }
+
+                // 전화/메일 버튼 연결
+                const targetPhone = currentUser.mobile || currentUser.directTel || (typeof COMPANY_COMMON !== 'undefined' ? COMPANY_COMMON.companyTel : "#");
+                document.getElementById('btnCall').href = targetPhone !== "#" ? `tel:${targetPhone}` : "#";
+                document.getElementById('btnBottomCall').href = targetPhone !== "#" ? `tel:${targetPhone}` : "#";
+                document.getElementById('btnMail').href = currentUser.email ? `mailto:${currentUser.email}` : "#";
+
+                // 휴대전화
+                if (currentUser.mobile && currentUser.mobile.trim() !== "") {
+                    document.getElementById('linkMobile').innerText = currentUser.mobile;
+                    document.getElementById('linkMobile').href = `tel:${currentUser.mobile}`;
+                    document.getElementById('btnCopyMobile').onclick = () => copyToClipboard(currentUser.mobile, '휴대전화 번호');
+                    document.getElementById('rowMobile').classList.remove('hidden');
+                } else {
+                    document.getElementById('rowMobile').classList.add('hidden');
+                }
+
+                // 직통전화
+                if (currentUser.directTel && currentUser.directTel.trim() !== "") {
+                    document.getElementById('linkDirectTel').innerText = currentUser.directTel;
+                    document.getElementById('linkDirectTel').href = `tel:${currentUser.directTel}`;
+                    document.getElementById('btnCopyDirectTel').onclick = () => copyToClipboard(currentUser.directTel, '직통전화 번호');
+                    document.getElementById('rowDirectTel').classList.remove('hidden');
+                } else {
+                    document.getElementById('rowDirectTel').classList.add('hidden');
+                }
+
+                // 이메일
+                if (currentUser.email && currentUser.email.trim() !== "") {
+                    document.getElementById('linkEmail').innerText = currentUser.email;
+                    document.getElementById('linkEmail').href = `mailto:${currentUser.email}`;
+                    document.getElementById('btnCopyEmail').onclick = () => copyToClipboard(currentUser.email, '이메일 주소');
+                    document.getElementById('rowEmail').classList.remove('hidden');
+
+                    const subEmailEl = document.getElementById('linkSubEmail');
+                    if (currentUser.subEmail && currentUser.subEmail.trim() !== "") {
+                        subEmailEl.innerText = `${currentUser.subEmail} (Sub)`;
+                        subEmailEl.href = `mailto:${currentUser.subEmail}`;
+                        subEmailEl.classList.remove('hidden');
+                    } else {
+                        subEmailEl.classList.add('hidden');
+                    }
+                } else {
+                    document.getElementById('rowEmail').classList.add('hidden');
+                }
+            }
+        }
+
+        function handleLogoError() {
+            const logoImg = document.getElementById('uiHeaderLogoImg');
+            const companyText = document.getElementById('uiHeaderCompanyText');
+            logoImg.classList.add('hidden');
+            companyText.innerText = (typeof COMPANY_COMMON !== 'undefined' && COMPANY_COMMON[currentLang]) ? COMPANY_COMMON[currentLang].companySub : "KATEC Co., Ltd.";
+            companyText.classList.remove('hidden');
+        }
+
+        function handleProfileError() {
+            const imgEl = document.getElementById('uiProfileImg');
+            const defaultIcon = document.getElementById('uiDefaultPhotoIcon');
+            imgEl.classList.add('hidden');
+            defaultIcon.classList.remove('hidden');
+        }
+
+        function downloadVCard() {
+            if (!currentUser) return;
+            const uData = currentUser[currentLang];
+            const cData = (typeof COMPANY_COMMON !== 'undefined') ? COMPANY_COMMON[currentLang] : { companyName: '(주)카텍', badgeText: '', address: '' };
+            const postCode = (typeof COMPANY_COMMON !== 'undefined') ? COMPANY_COMMON.postCode : '';
+
+            let vCardData = `BEGIN:VCARD\r\nVERSION:3.0\r\nN:${uData.name};;;;\r\nFN:${uData.name}\r\nORG:${cData.companyName}\r\nTITLE:${uData.department}\r\n`;
+            if (currentUser.mobile) vCardData += `TEL;TYPE=CELL,VOICE:${currentUser.mobile}\r\n`;
+            if (currentUser.directTel) vCardData += `TEL;TYPE=WORK,VOICE:${currentUser.directTel}\r\n`;
+            if (typeof COMPANY_COMMON !== 'undefined' && COMPANY_COMMON.companyTel) vCardData += `TEL;TYPE=MAIN,VOICE:${COMPANY_COMMON.companyTel}\r\n`;
+            if (typeof COMPANY_COMMON !== 'undefined' && COMPANY_COMMON.fax) vCardData += `TEL;TYPE=WORK,FAX:${COMPANY_COMMON.fax}\r\n`;
+            if (currentUser.email) vCardData += `EMAIL;TYPE=WORK,INTERNET:${currentUser.email}\r\n`;
+            if (currentUser.subEmail) vCardData += `EMAIL;TYPE=HOME,INTERNET:${currentUser.subEmail}\r\n`;
+            if (cData.address) vCardData += `ADR;TYPE=WORK;LABEL="HQ":;;${cData.address};;;${postCode};Republic of Korea\r\n`;
+            if (typeof COMPANY_COMMON !== 'undefined' && COMPANY_COMMON.website) vCardData += `URL:${COMPANY_COMMON.website}\r\n`;
+            if (cData.badgeText) vCardData += `NOTE:${cData.badgeText}\r\n`;
+            vCardData += `END:VCARD\r\n`;
+
+            const blob = new Blob([vCardData], { type: 'text/x-vcard;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `KATEC_${uData.name}_연락처.vcf`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
+            showToast(currentLang === 'ko' ? "연락처 등록 파일이 열립니다." : "Opening contact card...");
+        }
+
+        function copyToClipboard(text, label) {
+            if (!text || text.trim() === "") return;
+            const successMsg = currentLang === 'ko' ? `${label} 복사되었습니다.` : `${label} copied!`;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => showToast(successMsg));
+            } else {
+                const ta = document.createElement("textarea");
+                ta.value = text;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+                showToast(successMsg);
+            }
+        }
+
+        function copyAllContactInfo() {
+            if (!currentUser) return;
+            const uData = currentUser[currentLang];
+            const cData = (typeof COMPANY_COMMON !== 'undefined') ? COMPANY_COMMON[currentLang] : { companyName: '(주)카텍', address: '' };
+            const postCode = (typeof COMPANY_COMMON !== 'undefined') ? COMPANY_COMMON.postCode : '';
+
+            let lines = [`[${cData.companyName} - ${uData.name} ${uData.title}]`];
+            if (uData.department) lines.push(`• Org: ${uData.department}`);
+            if (currentUser.mobile) lines.push(`• Mobile: ${currentUser.mobile}`);
+            if (currentUser.directTel) lines.push(`• Direct: ${currentUser.directTel}`);
+            if (typeof COMPANY_COMMON !== 'undefined') lines.push(`• Office: ${COMPANY_COMMON.companyTel} / Fax: ${COMPANY_COMMON.fax}`);
+            if (currentUser.email) lines.push(`• Email: ${currentUser.email}`);
+            if (currentUser.subEmail) lines.push(`• Sub Email: ${currentUser.subEmail}`);
+            if (cData.address) lines.push(`• Address: [${postCode}] ${cData.address}`);
+
+            copyToClipboard(lines.join('\n'), currentLang === 'ko' ? "전체 명함 정보가" : "All contact info");
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMsg');
+            toastMsg.innerText = msg;
+            toast.classList.remove('opacity-0', 'pointer-events-none');
+            toast.classList.add('opacity-100');
+            setTimeout(() => {
+                toast.classList.remove('opacity-100');
+                toast.classList.add('opacity-0', 'pointer-events-none');
+            }, 2500);
+        }
+
+        function openQrModal() {
+            const currentUrl = window.location.href;
+            document.getElementById('qrCodeImg').src = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(currentUrl)}`;
+            const modal = document.getElementById('qrModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeQrModal() {
+            document.getElementById('qrModal').classList.add('hidden');
+            document.getElementById('qrModal').classList.remove('flex');
+        }
+
+        async function openShareModal() {
+            const shareUrl = window.location.href;
+            const companyName = (typeof COMPANY_COMMON !== 'undefined' && COMPANY_COMMON[currentLang]) ? COMPANY_COMMON[currentLang].companyName : '(주)카텍';
+            const userName = currentUser ? currentUser[currentLang].name : '';
+            const userTitle = currentUser ? currentUser[currentLang].title : '';
+            const shareTitle = `${companyName} ${userName} ${userTitle}`.trim();
+
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title: shareTitle,
+                        url: shareUrl
+                    });
+                } catch (err) {
+                    if (err.name !== 'AbortError') {
+                        copyToClipboard(shareUrl, currentLang === 'ko' ? '명함 주소가' : 'Card URL');
+                    }
+                }
+            } else {
+                copyToClipboard(shareUrl, currentLang === 'ko' ? '명함 주소가' : 'Card URL');
+            }
+        }
+    </script>
+</body>
+</html>
