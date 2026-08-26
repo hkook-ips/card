@@ -2,7 +2,7 @@
 
 const MEMBERS_DATA = {
     // 1. 허국 이사
-    "ktop-heo.kook": {
+    "heo.kook": {
         ko: {
             name: "허국",
             title: "이사",
@@ -20,7 +20,7 @@ const MEMBERS_DATA = {
         subEmail: "hukug92@gmail.com"
     }
     //이재열
-    , "ktop-lee.jae-yeol": {
+    , "lee.jae-yeol": {
         ko: {
             name: "이재열",
             title: "부장",
