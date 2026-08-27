@@ -1,7 +1,7 @@
 // members.js - 직원별 개인 데이터베이스 & 회사 공통 정보
 
 const MEMBERS_DATA = {
-    // 1. 허국 이사
+    //허국 이사
     "heo.kook": {
         ko: {
             name: "허국",
@@ -37,7 +37,24 @@ const MEMBERS_DATA = {
         email: "jylee0@ktopils.com",
         subEmail: "angelove2000@daum.net",
     }
-
+    //이홍도
+    , "Lee.HongDo": {
+        ko: {
+            name: "이홍도",
+            title: "부장",
+            department: "사업부 | 1부서장"
+        },
+        en: {
+            name: "Hong Do Lee",
+            title: "General Manager",
+            department: "IPS Division | 1 Department Manager"
+        },
+        photoUrl: "./img/img-Lee.HongDo.png",
+        mobile: "+82 10-4664-2154",
+        directTel: "+82 70-4185-2379",
+        email: "greenwin80@ktopils.com",
+        subEmail: "bluewin80@daum.net",
+    }
     // 직원이 추가될 경우 아래 형태로 계속 추가 (키값: "아이디")
     /*
     , "hong": {
