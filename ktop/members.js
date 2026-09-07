@@ -18,7 +18,8 @@ const MEMBERS_DATA = {
         directTel: "+82 70-4185-4716",
         email: "hukug92@ktopils.com",
         subEmail: "hukug92@gmail.com"
-    }
+    },
+    
     //이재열
     "lee.jae-yeol": {
         ko: {
@@ -35,7 +36,7 @@ const MEMBERS_DATA = {
         mobile: "+82 10-8708-3259",
         directTel: "+82 70-4260-8633",
         email: "jylee0@ktopils.com",
-        subEmail: "angelove2000@daum.net",
+        subEmail: "angelove2000@daum.net"
     },
 
    //이홍도
@@ -54,7 +55,7 @@ const MEMBERS_DATA = {
         mobile: "+82 10-4664-2154",
         directTel: "+82 70-4185-2379",
         email: "greenwin80@ktopils.com",
-        subEmail: "bluewin80@daum.net",
+        subEmail: "bluewin80@daum.net"
     },
     
     // 김성원
