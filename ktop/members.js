@@ -20,7 +20,7 @@ const MEMBERS_DATA = {
         subEmail: "hukug92@gmail.com"
     }
     //이재열
-    , "lee.jae-yeol": {
+    "lee.jae-yeol": {
         ko: {
             name: "이재열",
             title: "부장",
@@ -39,7 +39,7 @@ const MEMBERS_DATA = {
     },
 
    //이홍도
-    , "lee.hongdo": {
+    "lee.hongdo": {
         ko: {
             name: "이홍도",
             title: "부장",
