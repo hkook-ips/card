@@ -38,6 +38,25 @@ const MEMBERS_DATA = {
         subEmail: "angelove2000@daum.net",
     },
 
+   //이홍도
+    , "Lee.Hong Do": {
+        ko: {
+            name: "이홍도",
+            title: "부장",
+            department: "사업부 | 1부서장"
+        },
+        en: {
+            name: "Hong Do Lee",
+            title: "General Manager",
+            department: "IPS Division | 1 Department Manager"
+        },
+        photoUrl: "./img/img-Lee.Hong Do.png",
+        mobile: "+82 10-4664-2154",
+        directTel: "+82 70-4185-2379",
+        email: "greenwin80@ktopils.com",
+        subEmail: "bluewin80@daum.net",
+    },
+    
     // 김성원
     "kim.sungwon": {
         ko: {
