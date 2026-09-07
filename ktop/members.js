@@ -39,7 +39,7 @@ const MEMBERS_DATA = {
     },
 
    //이홍도
-    , "Lee.Hong Do": {
+    , "lee.hongdo": {
         ko: {
             name: "이홍도",
             title: "부장",
@@ -50,7 +50,7 @@ const MEMBERS_DATA = {
             title: "General Manager",
             department: "IPS Division | 1 Department Manager"
         },
-        photoUrl: "./img/img-Lee.Hong Do.png",
+        photoUrl: "./img/img-lee.hongdo.png",
         mobile: "+82 10-4664-2154",
         directTel: "+82 70-4185-2379",
         email: "greenwin80@ktopils.com",
