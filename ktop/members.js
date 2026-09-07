@@ -43,7 +43,7 @@ const MEMBERS_DATA = {
         ko: {
             name: "김성원",
             title: "대리",
-            department: "사업1부 | 대리"
+            department: "사업부 | 대리"
         },
         en: {
             name: "Sung Won Kim",
@@ -62,7 +62,7 @@ const MEMBERS_DATA = {
         ko: {
             name: "김채환",
             title: "과장",
-            department: "경영팀 | 과장"
+            department: "경영부 | 과장"
         },
         en: {
             name: "Chaehwan Kim",
@@ -81,7 +81,7 @@ const MEMBERS_DATA = {
         ko: {
             name: "박소망",
             title: "주임",
-            department: "사업2부 | 주임"
+            department: "사업부 | 주임"
         },
         en: {
             name: "Somang Park",
@@ -119,7 +119,7 @@ const MEMBERS_DATA = {
         ko: {
             name: "원수희",
             title: "대리",
-            department: "사업2부 | 대리"
+            department: "사업부 | 대리"
         },
         en: {
             name: "Suhee Won",
@@ -157,7 +157,7 @@ const MEMBERS_DATA = {
         ko: {
             name: "이상엽",
             title: "사원",
-            department: "사업1부 | 사원"
+            department: "사업부 | 사원"
         },
         en: {
             name: "Sang Yeop Lee",
@@ -196,7 +196,7 @@ const MEMBERS_DATA = {
         ko: {
             name: "이지상",
             title: "과장",
-            department: "사업1부 | 과장"
+            department: "사업부 | 과장"
         },
         en: {
             name: "Jee-Sang Lee",
@@ -215,7 +215,7 @@ const MEMBERS_DATA = {
         ko: {
             name: "이준호",
             title: "사원",
-            department: "사업1부 | 사원"
+            department: "사업부 | 사원"
         },
         en: {
             name: "Junho Lee",
@@ -234,7 +234,7 @@ const MEMBERS_DATA = {
         ko: {
             name: "임영민",
             title: "대리",
-            department: "사업2부 | 대리"
+            department: "사업부 | 대리"
         },
         en: {
             name: "Youngmin Lim",
@@ -253,7 +253,7 @@ const MEMBERS_DATA = {
         ko: {
             name: "정병곤",
             title: "대리",
-            department: "사업1부 | 대리"
+            department: "사업부 | 대리"
         },
         en: {
             name: "Byeonggon Jeong",
@@ -272,7 +272,7 @@ const MEMBERS_DATA = {
         ko: {
             name: "최영석",
             title: "차장",
-            department: "사업1부 | 차장"
+            department: "사업부 | 차장"
         },
         en: {
             name: "Young Seok Choi",
