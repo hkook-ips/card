@@ -287,7 +287,7 @@ const MEMBERS_DATA = {
     },
 
     // 김종근
-    "kim.Jonggeun": {
+    "kim.jonggeun": {
         ko: {
             name: "김종근",
             title: "이사",
@@ -298,7 +298,7 @@ const MEMBERS_DATA = {
             title: "Director",
             department: "IPS Division | Head of Division"
         },
-        photoUrl: "./img/img-kim.Jonggeun.png",
+        photoUrl: "./img/img-kim.jonggeun.png",
         mobile: "+82 10-3544-7679",
         directTel: "+82 70-4185-2364",
         email: "ck467900@ktopils.com",
