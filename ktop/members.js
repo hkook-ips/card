@@ -286,6 +286,25 @@ const MEMBERS_DATA = {
         subEmail: "jbg0770@naver.com"
     },
 
+    // 김종근
+    "kim.Jonggeun": {
+        ko: {
+            name: "김종근",
+            title: "이사",
+            department: "사업부 | 본부장"
+        },
+        en: {
+            name: "Jonggeun Kim",
+            title: "Director",
+            department: "IPS Division | Head of Division"
+        },
+        photoUrl: "./img/img-kim.Jonggeun.png",
+        mobile: "+82 10-3544-7679",
+        directTel: "+82 70-4185-2364",
+        email: "ck467900@ktopils.com",
+        subEmail: "ck4679@naver.com"
+    },
+
     // 최영석
     "choi.youngseok": {
         ko: {
