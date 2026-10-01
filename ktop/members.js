@@ -337,7 +337,7 @@ const MEMBERS_DATA = {
             department: "IPS Division | Senior Manager"
         },
         photoUrl: "./img/img-kim.gyeongmo.png",
-        mobile: "+82 10-4185-7402",
+        mobile: "+82 10-4162-7402",
         directTel: "+82 70-4185-2368",
         email: "crazys24u@ktopils.com",
         subEmail: "crazys24u@daum.net"
